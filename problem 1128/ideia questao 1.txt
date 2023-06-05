@@ -1,0 +1,82 @@
+>>tipo de estrutura de dados
+    intersecao{
+	    int i;
+	}
+	rua{
+	    intersecao i1, i2;
+		int tipo_via; //1 ou 2
+	}
+	
+N - numero de intersecoes
+M - numero de ruas
+
+criar matriz M[i][f] = P, onde i,j entre 1 e N e P e 0 (nao ha rua de i pra j) ou 1 (ha rua de i pra j)
+
+>>funcionamento do programa
+processar entrada
+    ler primeira linha, gravar valores N e M, 
+	enquanto M !=0 e N != 0
+		testar N entre 2 e 2000, inclusive; caso contrario, falha
+		testar M entre 2 e N*(N-1)/2, inclusive; caso contrario, falha
+		
+		avançar pra proxima linha
+		enquanto le as proximas M linhas,
+			gravar valores V, W e P
+
+			criar intersecao V e W, caso nao existam
+			criar rua que sai da intersecao V para a W, de via unica (se P = 1) ou mao dupla se (P = 2)
+			avançar pra proxima linha
+		
+		finalizou leitura do caso de teste, iniciar busca de arvore geradora	
+		implem. algoritmo generic-mst, com modificacao:
+		se houver uma aresta u->v de mao unica, usar bfs pra achar caminho que conecte v a u; se não achar, falha
+
+algoritmo
+
+bool conexo = True //é True se as intersecoes sao conexas como inicio ou fim de um caminho para todas as outras
+inters = 1 //intersecao inicial analisada
+C = [] //conj. dos componentes conexos
+
+while size(C) < N:
+    tem_adj = 0 //=1 se inters tem adjacencia
+    para f entre 1 e N:
+        if f != inters e f NOT IN C e m[inters][f] == 1:
+            tem_adj = 1
+            if m[f][inters] == 0:
+                if BFS(f,C) == False:
+                    conexo = False
+                    break
+
+            C.append(f)
+            inters = f
+            break
+    if conexo == False:
+        break
+    if tem_adj == 0:
+        if inters == 1:
+            conexo = False
+            break
+        c.c:
+            para antec entre 1 e N:
+                if antec != inters e m[antec][inters] == 1 e antec IN C:
+                    inters = antec
+                    break
+
+
+BFS(f,C):
+achou_caminho = False
+Q = {f}
+while Q != {}:
+    u = dequeue(Q)
+    for v in adj[u]:
+        if v IN C:
+            achou_caminho = True
+            break
+        enqueue(Q,v)
+return achou_caminho
+
+OBS: Apesar de a ideia estar correta na intuicao, e muito custosa pra rodar menos de 1 segundo. Mudei para a seguinte ideia:
+- Se o no 1 conecta os demais
+- basta que todos os outros conectem a 1
+para isso, no primeiro rodo um BFS normal, o tamanho do vetor de visitados deve ser o numero de vertices
+para o segundo ponto, rodo um BFS, só que ao inves de detectar se o no 1 conecta um no v, eu verifico quais nos v1,v2,..,vn conectam a 1 e coloco estes na fila para serem visitados. Ao final o vetor de visitados deve ter tamanho do num de vertices
